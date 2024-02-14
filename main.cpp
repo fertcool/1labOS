@@ -39,17 +39,18 @@ void GetFiles(char* dir, vector<char*>& files)
         {
             files.push_back(fullentry);
         }
+        
     }
     chdir("..");
     closedir(dp);
 }
-void archivate(char* dir)
+void archivate(char* dir, char* archivename)
 {
     vector<char*> files;
     vector<int> filesizes;
     GetFiles(dir, files);
 
-    FILE* out = fopen("combined", "wb");
+    FILE* out = fopen(archivename, "wb");
     fprintf(out, "%d\n", files.size());
 
     //цикл создания заголовка
@@ -78,15 +79,51 @@ void archivate(char* dir)
             fputc(fgetc(in), out);
         
         fclose(in);
+        remove(files[i]);
     }
-   
+    
     fclose(out);
+}
+
+void dearchivate(char* archname)
+{
+    int countfiles;
+    vector<pair<char*, int>> files;
+    FILE* in = fopen(archname, "rb");
+    fscanf(in, "%d\n", &countfiles);
+
+    files.resize(countfiles);
+
+    for(int i = 0; i < countfiles; ++i)
+    {
+        files[i].first = new char[4096];//костыль
+        fscanf(in, "%s%d\n", files[i].first, &files[i].second);
+    }
+
+    for(auto file: files)
+    {
+        FILE* out = fopen(file.first, "wb");
+        char* buf = new char[file.second];
+        fread(buf, file.second, 1, in);
+        fwrite(buf, file.second, 1, out);
+        fclose(out);
+    }
+    cout<<"";
+    
 }
 int main(int argc, char* argv[])
 {
     char* archdir = argv[1];
-
-    archivate(archdir);
+    char* archname = argv[3];
+    char* command = argv[2];
+    if (strcmp(command, "-a") == 0)
+        archivate(archdir, archname);
+    if (strcmp(command, "-da") == 0)
+        dearchivate(archname);
+    else
+    {
+        cout<< "Wrong command!";
+    }
     return 0;
 
 }
