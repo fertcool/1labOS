@@ -229,7 +229,7 @@ void dearchivate(char* archdir, //путь к архиву
         fscanf(in, "%s%d\n", filepath, &files[i].second); //запись filepath_in_archive
     }
 
-    //цикл создания файлов из архива (в той же директории где находится архив) 
+    //цикл создания файлов из архива 
     for(auto file: files)
     {
         FILE* out;
