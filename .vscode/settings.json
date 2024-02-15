@@ -1,7 +1,8 @@
 {
     "files.associations": {
         "*.tcc": "cpp",
-        "string": "cpp"
+        "string": "cpp",
+        "new": "cpp"
     },
     "files.autoSave": "off"
 }
