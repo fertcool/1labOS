@@ -74,7 +74,7 @@ void makedirs(char* file // полный путь к файлу
 }
 
 //ф-я поиска всех файлов в заданной директории
-void GetFiles(char* dir, //текущая директория поиска
+bool GetFiles(char* dir, //текущая директория поиска
               vector<char*>& files, // заполняемый вектор путей к файлам
               bool firstin = true // флаг первого входа в ф-ю
               )
@@ -98,7 +98,7 @@ void GetFiles(char* dir, //текущая директория поиска
     if ((dp = opendir(dir)) == NULL)
     {
         cout<<"Cannot open directory: "<< dir<<endl;
-        return;
+        return false;
     }
 
     // первый вход 
@@ -140,6 +140,8 @@ void GetFiles(char* dir, //текущая директория поиска
         
     }
     closedir(dp);
+    
+    return true;
 }
 
 //ф-я архивации выбранной папки
@@ -151,7 +153,8 @@ void archivate(char* dir, //путь к архивируемой папке
     vector<int> filesizes; //вектор с размерами этих файлов
 
     //находим все файлы в заданной папке (включая поддиректории)
-    GetFiles(dir, files);
+    if(!GetFiles(dir, files))
+        return;
 
 
     //            СТРУКТУРА АРХИВА 
@@ -250,7 +253,7 @@ void dearchivate(char* archdir, //путь к архиву
         delete buf;
     }
 
-    //чистим строки с названиями файлов (т.кю больше они не используются)
+    //чистим строки с названиями файлов (т.к. больше они не используются)
     for (auto file : files)
     {
         delete file.first;
