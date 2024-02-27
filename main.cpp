@@ -74,7 +74,10 @@ void makedirs(char* file // полный путь к файлу
 }
 
 //ф-я поиска всех файлов в заданной директории
-bool GetFiles(char* dir, //текущая директория поиска
+int //0 - нет директории
+    //1 - директория пуста
+    //2 - все ок 
+GetFiles(char* dir, //текущая директория поиска
               vector<char*>& files, // заполняемый вектор путей к файлам
               bool firstin = true // флаг первого входа в ф-ю
               )
@@ -98,7 +101,7 @@ bool GetFiles(char* dir, //текущая директория поиска
     if ((dp = opendir(dir)) == NULL)
     {
         cout<<"Cannot open directory: "<< dir<<endl;
-        return false;
+        return 0;
     }
 
     // первый вход 
@@ -113,6 +116,8 @@ bool GetFiles(char* dir, //текущая директория поиска
         chdir(".."); // теперь мы в родительской директории архивируемой папки 
         //и сможем правильно работать с ф-ми lstat 
     }
+
+    bool emptydir = true;
     // цикл по всем файлами текущей директории 
     while((entry = readdir(dp)) != NULL)
     {
@@ -134,19 +139,27 @@ bool GetFiles(char* dir, //текущая директория поиска
                 delete fullentry;
                 continue;
             }
-
-            GetFiles(fullentry, files, firstin);
-            delete fullentry;
+            emptydir = false;
+            if(GetFiles(fullentry, files, firstin) == 1)
+            {
+                files.push_back(fullentry);
+            }
+            else
+                delete fullentry;
         }
         else// добавляем файл в вектор
         {
             files.push_back(fullentry);
+            emptydir = false;
         }
         
     }
     closedir(dp);
 
-    return true;
+    if (emptydir)
+        return 1;
+    else
+        return 2;
 }
 
 //ф-я архивации выбранной папки
