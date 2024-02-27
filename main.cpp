@@ -122,6 +122,7 @@ bool GetFiles(char* dir, //текущая директория поиска
         strcat(fullentry, "/");
         strcat(fullentry, entry->d_name);
 
+
         lstat(fullentry, &statbuf); //сбор метаданных
 
         // если файл - директория, то ищем файлы и в ней
@@ -129,9 +130,13 @@ bool GetFiles(char* dir, //текущая директория поиска
         {
             // не учитываем ссылки ".", "..""
             if (strcmp(".", entry->d_name) == 0 || strcmp("..", entry->d_name) == 0)
+            {
+                delete fullentry;
                 continue;
+            }
 
             GetFiles(fullentry, files, firstin);
+            delete fullentry;
         }
         else// добавляем файл в вектор
         {
@@ -140,7 +145,7 @@ bool GetFiles(char* dir, //текущая директория поиска
         
     }
     closedir(dp);
-    
+
     return true;
 }
 
