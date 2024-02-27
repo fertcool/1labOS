@@ -117,7 +117,7 @@ bool GetFiles(char* dir, //текущая директория поиска
     while((entry = readdir(dp)) != NULL)
     {
         //создание полного пути файла со структурой ВЫШЕ
-        char* fullentry = new char[strlen(dir)+strlen(entry->d_name)+1];
+        char* fullentry = new char[strlen(dir)+strlen(entry->d_name)+2];
         strcpy(fullentry, dir);
         strcat(fullentry, "/");
         strcat(fullentry, entry->d_name);
@@ -131,12 +131,12 @@ bool GetFiles(char* dir, //текущая директория поиска
             // не учитываем ссылки ".", "..""
             if (strcmp(".", entry->d_name) == 0 || strcmp("..", entry->d_name) == 0)
             {
-                delete fullentry;
+                delete[] fullentry;
                 continue;
             }
 
             GetFiles(fullentry, files, firstin);
-            delete fullentry;
+            delete[] fullentry;
         }
         else// добавляем файл в вектор
         {
@@ -207,7 +207,7 @@ void archivate(char* dir, //путь к архивируемой папке
     //чистим строки с путями к файлам (т.к. больше их не используем)
     for (auto file : files)
     {
-        delete file;
+        delete[] file;
     }
 }
 
@@ -255,13 +255,13 @@ void dearchivate(char* archdir, //путь к архиву
         fclose(out);
 
         //чистим буфер
-        delete buf;
+        delete[] buf;
     }
 
     //чистим строки с названиями файлов (т.к. больше они не используются)
     for (auto file : files)
     {
-        delete file.first;
+        delete[] file.first;
     }
     
 }
